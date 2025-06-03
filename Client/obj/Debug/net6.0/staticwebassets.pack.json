@@ -9725,6 +9725,10 @@
       "PackagePath": "staticwebassets\\js\\DepartmentScript.js"
     },
     {
+      "Id": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\EmployeeScript.js",
+      "PackagePath": "staticwebassets\\js\\EmployeeScript.js"
+    },
+    {
       "Id": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },

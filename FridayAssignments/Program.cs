@@ -14,8 +14,8 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MyContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("FridayAssignments"))); 
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
 builder.Services.AddAutoMapper(typeof(Program));
-builder.Services.AddScoped<EmployeeRepository>();
 builder.Services.AddCors(c =>
 {
     c.AddPolicy("AllowOrigin", options => 

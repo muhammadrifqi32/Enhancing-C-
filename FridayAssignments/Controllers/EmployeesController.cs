@@ -1,6 +1,8 @@
-﻿using FridayAssignments.Context;
+﻿using AutoMapper;
+using FridayAssignments.Context;
 using FridayAssignments.Models;
-using FridayAssignments.Repositories;
+using FridayAssignments.Models.DTOs;
+using FridayAssignments.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -11,13 +13,15 @@ namespace FridayAssignments.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly EmployeeRepository _employeeRepository;
+        private readonly IEmployeeRepository _employeeRepository;
         private readonly MyContext _context;
+        private readonly IMapper _mapper;
 
-        public EmployeesController(EmployeeRepository employeeRepository, MyContext context)
+        public EmployeesController(IEmployeeRepository employeeRepository, MyContext context, IMapper mapper)
         {
             _employeeRepository = employeeRepository;
             _context = context;
+            _mapper = mapper;
         }
 
         private IActionResult ApiResponse(HttpStatusCode status, string message, object? data = null)
@@ -28,52 +32,65 @@ namespace FridayAssignments.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var get = await _employeeRepository.GetAsync();
-            if (get.Any())
-                return ApiResponse(HttpStatusCode.OK, $"{get.Count()} Data Ditemukan", get);
+            var employees = await _employeeRepository.GetAsync();
+            if (!employees.Any())
+                return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
 
-            return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
+            var dto = _mapper.Map<List<EmployeeDto>>(employees);
+            return ApiResponse(HttpStatusCode.OK, $"{dto.Count} Data Ditemukan", dto);
         }
 
-        [HttpGet("{key}")]
-        public async Task<IActionResult> Get(string key)
+        [HttpGet("{nik}")]
+        public async Task<IActionResult> Get(string nik)
         {
-            var get = await _employeeRepository.GetAsync(key);
-            if (get != null)
-                return ApiResponse(HttpStatusCode.OK, "Data Ditemukan", get);
+            var employee = await _employeeRepository.GetAsync(nik);
+            if (employee == null)
+                return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
 
-            return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
+            var dto = _mapper.Map<EmployeeDto>(employee);
+            return ApiResponse(HttpStatusCode.OK, "Data Ditemukan", dto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert(Employee employee)
+        public async Task<IActionResult> Insert([FromBody] EmployeePostDto input)
         {
-            // VALIDASI Dept_Id terlebih dahulu
-            var deptExists = await _context.Departments.AnyAsync(d => d.Dept_Id == employee.Dept_Id);
+            var deptExists = await _context.Departments.AnyAsync(d => d.Dept_Id == input.Dept_Id);
             if (!deptExists)
                 return ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
 
+            var employee = _mapper.Map<Employee>(input);
             var result = await _employeeRepository.InsertAsync(employee);
             if (result >= 1)
-                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dimasukkan", result);
+            {
+                var dto = _mapper.Map<EmployeeDto>(employee);
+                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dimasukkan", dto);
+            }
 
             return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memasukkan Data");
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update(Employee employee)
+        public async Task<IActionResult> Update([FromBody] EmployeePutDto input)
         {
+            var deptExists = await _context.Departments.AnyAsync(d => d.Dept_Id == input.Dept_Id);
+            if (!deptExists)
+                return ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
+
+            var employee = _mapper.Map<Employee>(input);
             var result = await _employeeRepository.UpdateAsync(employee);
             if (result >= 1)
-                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Diperbaharui", result);
+            {
+                var dto = _mapper.Map<EmployeeDto>(employee);
+                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Diperbaharui", dto);
+            }
 
             return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memperbaharui Data");
         }
 
-        [HttpPatch]
-        public async Task<IActionResult> Delete(string NIK)
+        [HttpPatch("{nik}")]
+        public async Task<IActionResult> Delete(string nik)
         {
-            var result = await _employeeRepository.DeleteAsync(NIK);
+            var result = await _employeeRepository.DeleteAsync(nik);
             if (result >= 1)
                 return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dihapus", result);
             else if (result == 0)

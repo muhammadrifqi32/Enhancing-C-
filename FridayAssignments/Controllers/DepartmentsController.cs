@@ -30,7 +30,7 @@ namespace FridayAssignments.Controllers
         public async Task<IActionResult> Get()
         {
             var result = await _departmentRepository.GetAsync();
-            var dto = _mapper.Map<List<DepartmentDTO>>(result);
+            var dto = _mapper.Map<List<DepartmentDto>>(result);
             return ApiResponse(HttpStatusCode.OK, $"{dto.Count} data ditemukan", dto);
         }
 
@@ -38,7 +38,7 @@ namespace FridayAssignments.Controllers
         public async Task<IActionResult> GetData([FromBody] JqueryDatatableParam param)
         {
             var result = await _departmentRepository.GetPagedAsync(param);
-            var dto = _mapper.Map<List<DepartmentDTO>>(result.Data);
+            var dto = _mapper.Map<List<DepartmentDto>>(result.Data);
 
             var response = new
             {
@@ -58,12 +58,12 @@ namespace FridayAssignments.Controllers
             if (result == null)
                 return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
 
-            var dto = _mapper.Map<DepartmentDTO>(result);
+            var dto = _mapper.Map<DepartmentDto>(result);
             return ApiResponse(HttpStatusCode.OK, "Data ditemukan", dto);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Insert([FromBody] DepartmentCreateDTO input)
+        public async Task<IActionResult> Insert([FromBody] DepartmentPostDto input)
         {
             var department = _mapper.Map<Department>(input);
             var save = await _departmentRepository.InsertAsync(department);
@@ -71,12 +71,12 @@ namespace FridayAssignments.Controllers
             if (!save)
                 return ApiResponse(HttpStatusCode.InternalServerError, "Gagal memasukkan data");
 
-            var dto = _mapper.Map<DepartmentDTO>(department);
+            var dto = _mapper.Map<DepartmentDto>(department);
             return ApiResponse(HttpStatusCode.OK, "Data berhasil dimasukkan", dto);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Update([FromBody] DepartmentDTO input)
+        public async Task<IActionResult> Update([FromBody] DepartmentPutDto input)
         {
             var department = _mapper.Map<Department>(input);
             var save = await _departmentRepository.UpdateAsync(department);
@@ -84,7 +84,7 @@ namespace FridayAssignments.Controllers
             if (!save)
                 return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {input.Dept_Id} tidak ditemukan atau gagal update");
 
-            var dto = _mapper.Map<DepartmentDTO>(department);
+            var dto = _mapper.Map<DepartmentDto>(department);
             return ApiResponse(HttpStatusCode.OK, "Data berhasil diperbarui", dto);
         }
 

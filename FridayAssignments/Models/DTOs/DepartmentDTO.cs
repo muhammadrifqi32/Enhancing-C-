@@ -4,18 +4,24 @@ namespace FridayAssignments.Models.DTOs
 {
     namespace FridayAssignments.DTOs
     {
-        public class DepartmentDTO
+        public class DepartmentDto
         {
-            [Required(ErrorMessage = "ID Departemen wajib diisi untuk update")]
             public string? Dept_Id { get; set; }
+            public string? Name { get; set; }
+        }
 
+        public class DepartmentPostDto
+        {
             [Required(ErrorMessage = "Nama Departemen wajib diisi")]
             [MaxLength(50, ErrorMessage = "Nama maksimal 50 karakter")]
             public string? Name { get; set; }
         }
 
-        public class DepartmentCreateDTO
+        public class DepartmentPutDto
         {
+            [Required(ErrorMessage = "ID Departemen wajib diisi")]
+            public string? Dept_Id { get; set; }
+
             [Required(ErrorMessage = "Nama Departemen wajib diisi")]
             [MaxLength(50, ErrorMessage = "Nama maksimal 50 karakter")]
             public string? Name { get; set; }
