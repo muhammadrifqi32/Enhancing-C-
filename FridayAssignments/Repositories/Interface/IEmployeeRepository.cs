@@ -4,10 +4,10 @@ namespace FridayAssignments.Repositories.Interface
 {
     public interface IEmployeeRepository
     {
-        public IEnumerable<Employee> Get();
-        public Employee Get(string NIK);
-        public int Insert(Employee employee);
-        public int Update(Employee employee);
-        public int Delete(string NIK);
+        Task<IEnumerable<Employee>> GetAsync();
+        Task<Employee?> GetAsync(string NIK);
+        Task<int> InsertAsync(Employee employee);
+        Task<int> UpdateAsync(Employee employee);
+        Task<int> DeleteAsync(string NIK);
     }
 }

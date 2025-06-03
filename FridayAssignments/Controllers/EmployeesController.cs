@@ -1,8 +1,8 @@
-﻿using FridayAssignments.Models;
+﻿using FridayAssignments.Context;
+using FridayAssignments.Models;
 using FridayAssignments.Repositories;
-using Microsoft.AspNetCore.Cors;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Net;
 
 namespace FridayAssignments.Controllers
@@ -11,185 +11,75 @@ namespace FridayAssignments.Controllers
     [ApiController]
     public class EmployeesController : ControllerBase
     {
-        private readonly EmployeeRepository employeeRepository;
+        private readonly EmployeeRepository _employeeRepository;
+        private readonly MyContext _context;
 
-        public EmployeesController(EmployeeRepository employeeRepository)
+        public EmployeesController(EmployeeRepository employeeRepository, MyContext context)
         {
-            this.employeeRepository = employeeRepository;
+            _employeeRepository = employeeRepository;
+            _context = context;
+        }
+
+        private IActionResult ApiResponse(HttpStatusCode status, string message, object? data = null)
+        {
+            return StatusCode((int)status, new { status, message, data });
         }
 
         [HttpGet]
-        public virtual ActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var get = employeeRepository.Get();
-            if (get.Count() != 0)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get.Count() + " Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
-            }
+            var get = await _employeeRepository.GetAsync();
+            if (get.Any())
+                return ApiResponse(HttpStatusCode.OK, $"{get.Count()} Data Ditemukan", get);
+
+            return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
         }
 
         [HttpGet("{key}")]
-        public virtual ActionResult Get(string key)
+        public async Task<IActionResult> Get(string key)
         {
-            var get = employeeRepository.Get(key);
+            var get = await _employeeRepository.GetAsync(key);
             if (get != null)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", Data = get });
-            }
+                return ApiResponse(HttpStatusCode.OK, "Data Ditemukan", get);
+
+            return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
         }
 
         [HttpPost]
-        public virtual ActionResult Insert(Employee employee)
+        public async Task<IActionResult> Insert(Employee employee)
         {
-            var insert = employeeRepository.Insert(employee);
-            if (insert >= 1)
-            {
-                return StatusCode(200,
-                    new
-                    {
-                        status = HttpStatusCode.OK,
-                        message = "Data Berhasil Dimasukkan",
-                        Data = insert
-                    });
-            }
-            else
-            {
-                return StatusCode(500,
-                    new
-                    {
-                        status = HttpStatusCode.InternalServerError,
-                        message = "Gagal Memasukkan Data",
-                        Data = insert
-                    });
-            }
+            // VALIDASI Dept_Id terlebih dahulu
+            var deptExists = await _context.Departments.AnyAsync(d => d.Dept_Id == employee.Dept_Id);
+            if (!deptExists)
+                return ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
+
+            var result = await _employeeRepository.InsertAsync(employee);
+            if (result >= 1)
+                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dimasukkan", result);
+
+            return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memasukkan Data");
         }
 
         [HttpPut]
-        public virtual ActionResult Update(Employee employee)
+        public async Task<IActionResult> Update(Employee employee)
         {
-            var insert = employeeRepository.Update(employee);
-            if (insert >= 1)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Berhasil Diperbaharui", Data = insert });
-            }
-            else
-            {
-                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Memperbaharui Data", Data = insert });
-            }
+            var result = await _employeeRepository.UpdateAsync(employee);
+            if (result >= 1)
+                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Diperbaharui", result);
+
+            return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memperbaharui Data");
         }
 
         [HttpPatch]
-        public ActionResult Delete(string NIK)
+        public async Task<IActionResult> Delete(string NIK)
         {
-            var delete = employeeRepository.Delete(NIK);
-            if (delete >= 1)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Berhasil Dihapus", Data = delete });
-            }
-            else if (delete == 0)
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data dengan Tidak Ditemukan", Data = delete });
-            }
-            else
-            {
-                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Terjadi Kesalahan", Data = delete });
-            }
-        }
-        [HttpGet("GetActiveEmployee")]
-        public virtual ActionResult GetActiveEmployee()
-        {
-            var get = employeeRepository.GetActiveEmployee();
-            if (get.Count() != 0)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get.Count() + " Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan"});
-            }
-        }
-        [HttpGet("GetDeactiveEmployee")]
-        public virtual ActionResult GetDeactiveEmployee()
-        {
-            var get = employeeRepository.GetDeactiveEmployee();
-            if (get.Count() != 0)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get.Count() + " Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
-            }
-        }
+            var result = await _employeeRepository.DeleteAsync(NIK);
+            if (result >= 1)
+                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dihapus", result);
+            else if (result == 0)
+                return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
 
-        [HttpGet("GetActiveEmployeePerDepartment")]
-        public virtual ActionResult GetActiveEmployeePerDepartment(string DeptId)
-        {
-            var get = employeeRepository.GetActiveEmployeePerDepartment(DeptId);
-            if (get.Count() != 0)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get.Count() + " Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
-            }
-        }
-        [HttpGet("GetDeactiveEmployeePerDepartment")]
-        public virtual ActionResult GetDeactiveEmployeePerDepartment(string DeptId)
-        {
-            var get = employeeRepository.GetDeactiveEmployeePerDepartment(DeptId);
-            if (get.Count() != 0)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get.Count() + " Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
-            }
-        }
-
-        [HttpGet("GetTotalActivePerDepartment")]
-        public virtual ActionResult GetTotalActivePerDepartment()
-        {
-            var get = employeeRepository.GetTotalActivePerDepartment();
-            if (get != null)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get});
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
-            }
-        }
-
-        [HttpGet("GetTotalDeactivePerDepartment")]
-        public virtual ActionResult GetTotalDeactivePerDepartment()
-        {
-            var get = employeeRepository.GetTotalDeactivePerDepartment();
-            if (get != null)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get});
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan" });
-            }
-        }
-
-        //[EnableCors]
-        [HttpGet("TestCors")]
-        public ActionResult TestCors()
-        {
-            return Ok("TestCors");
+            return ApiResponse(HttpStatusCode.InternalServerError, "Terjadi Kesalahan");
         }
     }
 }
