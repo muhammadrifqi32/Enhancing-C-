@@ -1,15 +1,17 @@
 ﻿using FridayAssignments.Models;
+using FridayAssignments.Models.Dump;
+using FridayAssignments.Models.Helper;
 
 namespace FridayAssignments.Repositories.Interface
 {
     public interface IDepartmentRepository
     {
-        public IEnumerable<Department> Get();
-        //public PagedData<Department> Get(Parameters parameters);
-        public Department Get(string Dept_Id);
-        public int Insert(Department department);
-        public int Update(Department department);
-        public int Delete(string Dept_Id);
+        Task<List<Department>> GetAsync();
+        Task<Department?> GetAsync(string deptId);
+        Task<bool> InsertAsync(Department department);
+        Task<bool> UpdateAsync(Department department);
+        Task<bool> DeleteAsync(string deptId);
+        Task<PagedResult<Department>> GetPagedAsync(JqueryDatatableParam param);
 
     }
 }

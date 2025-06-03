@@ -179,6 +179,8 @@ C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bi
 C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\FridayAssignments.runtimeconfig.json
 C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\FridayAssignments.dll
 C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\FridayAssignments.pdb
+C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\AutoMapper.dll
+C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\AutoMapper.Extensions.Microsoft.DependencyInjection.dll
 C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\Azure.Core.dll
 C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\Azure.Identity.dll
 C:\Users\rifqi.muhammad\Downloads\Enhancing C#\Enhancing C#\FridayAssignments\bin\Debug\net6.0\Humanizer.dll

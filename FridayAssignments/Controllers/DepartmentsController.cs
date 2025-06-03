@@ -1,12 +1,10 @@
-﻿using Azure.Core;
-using FridayAssignments.Context;
+﻿using AutoMapper;
 using FridayAssignments.Models;
-using FridayAssignments.Repositories;
-using Microsoft.AspNetCore.Http;
+using FridayAssignments.Models.DTOs.FridayAssignments.DTOs;
+using FridayAssignments.Models.Dump;
+using FridayAssignments.Repositories.Interface;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using System.Net;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace FridayAssignments.Controllers
 {
@@ -14,184 +12,90 @@ namespace FridayAssignments.Controllers
     [ApiController]
     public class DepartmentsController : ControllerBase
     {
-        private readonly DepartmentRepository departmentRepository;
-        private readonly MyContext _myContext;
+        private readonly IDepartmentRepository _departmentRepository;
+        private readonly IMapper _mapper;
 
-        public DepartmentsController(DepartmentRepository departmentRepository, MyContext myContext)
+        public DepartmentsController(IDepartmentRepository departmentRepository, IMapper mapper)
         {
-            this.departmentRepository = departmentRepository;
-            this._myContext = myContext;
+            _departmentRepository = departmentRepository;
+            _mapper = mapper;
+        }
+
+        private IActionResult ApiResponse(HttpStatusCode status, string message, object? data = null)
+        {
+            return StatusCode((int)status, new { status, message, data });
         }
 
         [HttpGet]
-        public virtual ActionResult Get()
+        public async Task<IActionResult> Get()
         {
-            var get = departmentRepository.Get();
-            if (get.Count() != 0)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = get.Count() + " Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = get.Count() + " Data Ditemukan", Data = get });
-            }
+            var result = await _departmentRepository.GetAsync();
+            var dto = _mapper.Map<List<DepartmentDTO>>(result);
+            return ApiResponse(HttpStatusCode.OK, $"{dto.Count} data ditemukan", dto);
         }
 
         [HttpPost("Paging")]
-        public virtual ActionResult GetData([FromBody] JqueryDatatableParam param)
+        public async Task<IActionResult> GetData([FromBody] JqueryDatatableParam param)
         {
-            // Query your database based on the param parameters
-            var data = _myContext.Departments.AsQueryable(); // Start with all departments
+            var result = await _departmentRepository.GetPagedAsync(param);
+            var dto = _mapper.Map<List<DepartmentDTO>>(result.Data);
 
-
-            if (data.Count() != 0)
+            var response = new
             {
-                // Apply search filter if provided
-                if (!string.IsNullOrEmpty(param.Search?.Value))
-                {
-                    var searchTerm = param.Search.Value.ToLower();
-                    data = data.Where(e =>
-                        e.Dept_Id.ToLower().Contains(searchTerm) || // Ganti dengan kolom yang ingin dicari 
-                        e.Name.ToLower().Contains(searchTerm)
-                    );
-                }
+                draw = param.draw,
+                recordsTotal = result.RecordsTotal,
+                recordsFiltered = result.RecordsFiltered,
+                data = dto
+            };
 
-                // Apply sorting
-                var sortColumnIndex = param.Order.column;
-                var sortDirection = param.Order.dir;
-                if (sortColumnIndex == 1)
-                {
-                    data = sortDirection == "asc" ? data.OrderBy(d => d.Dept_Id) : data.OrderByDescending(d => d.Dept_Id);
-                }
-                else
-                {
-                    data = sortDirection == "asc" ? data.OrderBy(d => d.Dept_Id) : data.OrderByDescending(d => d.Dept_Id);
-                }
-
-                // Apply paging
-                var result = data.Skip(param.start).Take(param.length).ToList();
-
-                // Return the response
-                var responseData = new
-                {
-                    draw = param.draw,
-                    recordsTotal = _myContext.Departments.Count(),
-                    recordsFiltered = data.Count(),
-                    data = result
-                };
-
-                //return StatusCode(200, new { status = HttpStatusCode.OK, message = data.Count() + " Data Ditemukan", Data = responseData });
-                return Ok(responseData);
-            }
-            //var getData = departmentRepository.GetData(param);
-            //if(getData != null)
-            //{
-            //    return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Ditemukan", Data = getData });
-            //}
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", Data = data });
-            }
+            return Ok(response);
         }
 
-        //public virtual ActionResult GetPaging([FromQuery] DataTableRequest dataTableRequest)
-        //{
-        //    var pagedData = departmentRepository.Get(dataTableRequest);
-
-        //    if (pagedData.Data.Any())
-        //    {
-        //        return StatusCode(200, new
-        //        {
-        //            status = HttpStatusCode.OK,
-        //            message = pagedData.RecordsFiltered + " Data Ditemukan",
-        //            Data = pagedData.Data,
-        //            recordsTotal = pagedData.RecordsTotal,
-        //            recordsFiltered = pagedData.RecordsFiltered
-        //        });
-        //    }
-        //    else
-        //    {
-        //        return StatusCode(404, new
-        //        {
-        //            status = HttpStatusCode.NotFound,
-        //            message = pagedData.RecordsFiltered + " Data Ditemukan",
-        //            Data = pagedData.Data,
-        //            recordsTotal = pagedData.RecordsTotal,
-        //            recordsFiltered = pagedData.RecordsFiltered
-        //        });
-        //    }
-        //}
-
-        [HttpGet("{key}")]
-        public virtual ActionResult Get(string key)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> Get(string id)
         {
-            var get = departmentRepository.Get(key);
-            if (get != null)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Ditemukan", Data = get });
-            }
-            else
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data Tidak Ditemukan", Data = get });
-            }
+            var result = await _departmentRepository.GetAsync(id);
+            if (result == null)
+                return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
+
+            var dto = _mapper.Map<DepartmentDTO>(result);
+            return ApiResponse(HttpStatusCode.OK, "Data ditemukan", dto);
         }
 
         [HttpPost]
-        public virtual ActionResult Insert(Department department)
+        public async Task<IActionResult> Insert([FromBody] DepartmentCreateDTO input)
         {
-            var insert = departmentRepository.Insert(department);
-            if (insert >= 1)
-            {
-                return StatusCode(200,
-                    new
-                    {
-                        status = HttpStatusCode.OK,
-                        message = "Data Berhasil Dimasukkan",
-                        Data = insert
-                    });
-            }
-            else
-            {
-                return StatusCode(500,
-                    new
-                    {
-                        status = HttpStatusCode.InternalServerError,
-                        message = "Gagal Memasukkan Data",
-                        Data = insert
-                    });
-            }
+            var department = _mapper.Map<Department>(input);
+            var save = await _departmentRepository.InsertAsync(department);
+
+            if (!save)
+                return ApiResponse(HttpStatusCode.InternalServerError, "Gagal memasukkan data");
+
+            var dto = _mapper.Map<DepartmentDTO>(department);
+            return ApiResponse(HttpStatusCode.OK, "Data berhasil dimasukkan", dto);
         }
 
         [HttpPut]
-        public virtual ActionResult Update(Department department)
+        public async Task<IActionResult> Update([FromBody] DepartmentDTO input)
         {
-            var insert = departmentRepository.Update(department);
-            if (insert >= 1)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Berhasil Diperbaharui", Data = insert });
-            }
-            else
-            {
-                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Gagal Memperbaharui Data", Data = insert });
-            }
+            var department = _mapper.Map<Department>(input);
+            var save = await _departmentRepository.UpdateAsync(department);
+
+            if (!save)
+                return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {input.Dept_Id} tidak ditemukan atau gagal update");
+
+            var dto = _mapper.Map<DepartmentDTO>(department);
+            return ApiResponse(HttpStatusCode.OK, "Data berhasil diperbarui", dto);
         }
 
-        [HttpDelete("{key}")]
-        public ActionResult Delete(string key)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(string id)
         {
-            var delete = departmentRepository.Delete(key);
-            if (delete >= 1)
-            {
-                return StatusCode(200, new { status = HttpStatusCode.OK, message = "Data Berhasil Dihapus", Data = delete });
-            }
-            else if (delete == 0)
-            {
-                return StatusCode(404, new { status = HttpStatusCode.NotFound, message = "Data dengan Id " + key + "Tidak Ditemukan", Data = delete });
-            }
-            else
-            {
-                return StatusCode(500, new { status = HttpStatusCode.InternalServerError, message = "Terjadi Kesalahan", Data = delete });
-            }
+            var isDeleted = await _departmentRepository.DeleteAsync(id);
+            if (!isDeleted)
+                return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
+
+            return ApiResponse(HttpStatusCode.OK, "Data berhasil dihapus");
         }
     }
 }

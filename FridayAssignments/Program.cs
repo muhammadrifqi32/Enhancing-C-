@@ -1,5 +1,6 @@
 using FridayAssignments.Context;
 using FridayAssignments.Repositories;
+using FridayAssignments.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,8 +12,9 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MyContext>(options =>
-            options.UseSqlServer(builder.Configuration.GetConnectionString("FridayAssignments")));
-builder.Services.AddScoped<DepartmentRepository>();
+            options.UseSqlServer(builder.Configuration.GetConnectionString("FridayAssignments"))); 
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
+builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddScoped<EmployeeRepository>();
 builder.Services.AddCors(c =>
 {

@@ -9,8 +9,6 @@ namespace FridayAssignments.Context
         {
 
         }
-
-        // DbSet for each of your models
         public DbSet<Employee> Employees { get; set; }
         public DbSet<Department> Departments { get; set; }
     }
