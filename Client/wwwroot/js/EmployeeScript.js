@@ -1,11 +1,12 @@
 ﻿let table = null;
 
 $(document).ready(function () {
-    initDepartmentTable();
+    initEmployeeTable();
+    loadDepartments();
 });
 
-function initDepartmentTable() {
-    table = $('#tbDepartments').DataTable({
+function initEmployeeTable() {
+    table = $('#tbEmployees').DataTable({
         paging: true,
         lengthChange: true,
         lengthMenu: [[5, 10, 15, -1], ['5', '10', '15', 'Show All']],
@@ -16,17 +17,13 @@ function initDepartmentTable() {
         autoWidth: false,
         responsive: true,
         processing: true,
-        serverSide: true,
+        serverSide: false,
         ajax: {
-            url: "https://localhost:7079/api/Departments/paging",
-            type: "POST",
+            url: "https://localhost:7079/api/Employees",
+            type: "GET",
             dataType: "json",
-            contentType: "application/json; charset=utf-8",
-            data: function (d) {
-                d.order = d.order[0]; // flatten order for backend
-                return JSON.stringify(d);
-            },
-            error: handleAjaxError
+            dataSrc: json => json.data,
+            error: xhr => showErrorAlert(xhr.responseJSON?.message || 'Gagal memuat data')
         },
         language: {
             processing: "Memuat data...",
@@ -34,259 +31,173 @@ function initDepartmentTable() {
         },
         columnDefs: [
             { defaultContent: "-", targets: "_all" },
-            { searchable: false, orderable: false, targets: [0, 2] }
+            { searchable: false, orderable: false, targets: [0, 7] }
         ],
         columns: [
-            {
-                render: function (data, type, row, meta) {
-                    return `${meta.row + meta.settings._iDisplayStart + 1}.`;
-                }
-            },
-            { data: "name" },
-            {
-                render: renderActionButtons
-            }
+            { render: (data, type, row, meta) => `${meta.row + meta.settings._iDisplayStart + 1}.` },
+            { data: "nik" },
+            { data: null, render: row => `${row.firstName} ${row.lastName}` },
+            { data: "email" },
+            { data: "phoneNumber" },
+            { data: "address" },
+            { data: "departmentName" },
+            { render: renderActionButtons }
         ],
-        drawCallback: function () {
-            $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' });
-        }
+        drawCallback: () => $('[data-toggle="tooltip"]').tooltip({ trigger: 'hover' })
     });
 
-    // Auto update numbering on reorder / search
     table.on('order.dt search.dt', function () {
-        table.column(0, { search: 'applied', order: 'applied' })
-            .nodes()
-            .each(function (cell, i) {
-                cell.innerHTML = `${i + 1}.`;
-            });
+        table.column(0, { search: 'applied', order: 'applied' }).nodes().each((cell, i) => {
+            cell.innerHTML = `${i + 1}.`;
+        });
     });
 }
 
 function renderActionButtons(data, type, row) {
     return `
-        <button class="btn btn-warning" title="Edit" onclick="GetById('${row.dept_Id}')">
+        <button class="btn btn-warning" title="Edit" onclick="GetById('${row.nik}')">
             <i class="fas fa-pencil-alt"></i>
         </button>
         &nbsp;
-        <button class="btn btn-danger" title="Delete" onclick="Delete('${row.dept_Id}')">
+        <button class="btn btn-danger" title="Delete" onclick="Delete('${row.nik}')">
             <i class="fas fa-trash-alt"></i>
         </button>`;
 }
 
-function handleAjaxError(xhr, status, error) {
-    const message = xhr.responseJSON?.message || error || 'Gagal memuat data';
-    Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: message,
-        showConfirmButton: true
-    });
+function loadDepartments() {
+    $.ajax({
+        url: 'https://localhost:7079/api/Departments',
+        method: 'GET'
+    }).done(response => {
+        const dropdown = $('#departmentName');
+        dropdown.empty().append('<option value="">-- Pilih Department --</option>');
+        response.data.forEach(d => dropdown.append(`<option value="${d.dept_Id}">${d.name}</option>`));
+    }).fail(() => showErrorAlert("Gagal memuat department"));
 }
 
 function ClearScreen() {
-    $('#Id').val('');
-    $('#DepartmentName').val('');
+    $('#nik').val('');
+    $('#firstName').val('');
+    $('#lastName').val('');
+    $('#email').val('');
+    $('#phoneNumber').val('');
+    $('#address').val('');
+    $('#isActive').val('');
+    $('#departmentName').val('');
+
+    $('#formGroupEmail').hide();
     $('#Update').hide();
     $('#Save').show();
     $('#exampleModal').modal('hide');
 }
 
 function Save() {
-    const departmentName = $('#DepartmentName').val();
+    const departmentId = $('#departmentName').val();
+    if (!departmentId) return showErrorAlert('Pilih department terlebih dahulu');
 
-    if (!departmentName || departmentName.trim() === "") {
-        Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: 'Department name cannot be empty',
-            showConfirmButton: false,
-            timer: 1500
-        });
-        return;
-    }
-
-    const department = {
-        Name: departmentName.trim()
+    const employee = {
+        firstName: $('#firstName').val(),
+        lastName: $('#lastName').val(),
+        phoneNumber: $('#phoneNumber').val(),
+        address: $('#address').val(),
+        dept_Id: departmentId
     };
 
     $.ajax({
+        url: 'https://localhost:7079/api/Employees',
         type: 'POST',
-        url: 'https://localhost:7079/api/Departments',
-        data: JSON.stringify(department),
-        contentType: "application/json; charset=utf-8",
-    }).done((result) => {
-        Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: result.message,
-            showConfirmButton: false,
-            timer: 1500
-        });
+        data: JSON.stringify(employee),
+        contentType: 'application/json; charset=utf-8'
+    }).done(result => {
+        showSuccessAlert(result.message);
         table.ajax.reload();
         ClearScreen();
-    }).fail((xhr) => {
-        if (xhr.status === 400 && xhr.responseJSON?.errors) {
-            const errorMessages = Object.values(xhr.responseJSON.errors).flat();
-            const errorMessage = errorMessages[0] || "Validation failed";
-
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: errorMessage,
-                showConfirmButton: false,
-                timer: 2000
-            });
-        } else {
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Something went wrong',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
+    }).fail(xhr => {
+        const errorMessage = xhr.responseJSON?.errors
+            ? Object.values(xhr.responseJSON.errors).flat()[0]
+            : "Terjadi kesalahan";
+        showErrorAlert(errorMessage);
     });
 }
 
-function GetById(dept_Id) {
-    if (!dept_Id) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Invalid department ID',
-            showConfirmButton: false,
-            timer: 1500
-        });
-        return;
-    }
+function GetById(nik) {
+    if (!nik) return showErrorAlert('Invalid NIK');
 
     $.ajax({
-        url: `https://localhost:7079/api/Departments/${dept_Id}`,
-        type: "GET",
-        contentType: "application/json; charset=utf-8",
-        dataType: "json"
-    }).done((result) => {
+        url: `https://localhost:7079/api/Employees/${nik}`,
+        type: "GET"
+    }).done(result => {
         const obj = result.data;
-        if (!obj) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Data not found',
-                showConfirmButton: false,
-                timer: 1500
-            });
-            return;
-        }
+        if (!obj) return showErrorAlert('Data not found');
 
-        // Populate modal form
-        $('#Id').val(obj.dept_Id);
-        $('#DepartmentName').val(obj.name);
+        $('#nik').val(obj.nik);
+        $('#firstName').val(obj.firstName);
+        $('#lastName').val(obj.lastName);
+        $('#email').show();
+        $('#email').val(obj.email);
+        $('#phoneNumber').val(obj.phoneNumber);
+        $('#address').val(obj.address);
+        $('#isActive').val(obj.isActive);
+        $('#departmentName').val(obj.dept_Id);
 
-        // Show modal and toggle buttons
+        $('#formGroupEmail').show();
         $('#exampleModal').modal('show');
         $('#Update').show();
         $('#Save').hide();
-    }).fail((xhr) => {
-        const errorMsg = xhr.responseJSON?.message || 'Failed to fetch department data';
-        Swal.fire({
-            icon: 'error',
-            title: errorMsg,
-            showConfirmButton: false,
-            timer: 2000
-        });
+    }).fail(xhr => {
+        showErrorAlert(xhr.responseJSON?.message || 'Gagal mengambil data');
     });
 }
 
-
 function Update() {
-    const departmentId = $('#Id').val();
-    const departmentName = $('#DepartmentName').val();
+    const departmentId = $('#departmentName').val();
+    if (!departmentId) return showErrorAlert('Pilih department terlebih dahulu');
 
-    if (!departmentName || departmentName.trim() === "") {
-        Swal.fire({
-            position: 'center',
-            icon: 'error',
-            title: 'Department name cannot be empty',
-            showConfirmButton: false,
-            timer: 1500
-        });
-        return;
-    }
-
-    const department = {
+    const employee = {
+        nik: $('#nik').val(),
+        firstName: $('#firstName').val(),
+        lastName: $('#lastName').val(),
+        phoneNumber: $('#phoneNumber').val(),
+        address: $('#address').val(),
         dept_Id: departmentId,
-        name: departmentName.trim()
+        isActive: $('#isActive').val()
     };
 
     $.ajax({
-        url: 'https://localhost:7079/api/Departments/',
+        url: 'https://localhost:7079/api/Employees',
         type: 'PUT',
-        data: JSON.stringify(department),
-        contentType: "application/json; charset=utf-8",
-    }).done((result) => {
-        Swal.fire({
-            position: 'center',
-            icon: 'success',
-            title: result.message,
-            showConfirmButton: false,
-            timer: 1500
-        });
+        data: JSON.stringify(employee),
+        contentType: 'application/json; charset=utf-8'
+    }).done(result => {
+        showSuccessAlert(result.message);
         table.ajax.reload();
         ClearScreen();
-    }).fail((xhr) => {
-        if (xhr.status === 400 && xhr.responseJSON?.errors) {
-            const errorMessages = Object.values(xhr.responseJSON.errors).flat();
-            const errorMessage = errorMessages[0] || "Validation failed";
-
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: errorMessage,
-                showConfirmButton: false,
-                timer: 2000
-            });
-        } else {
-            Swal.fire({
-                position: 'center',
-                icon: 'error',
-                title: 'Something went wrong',
-                showConfirmButton: false,
-                timer: 2000
-            });
-        }
+    }).fail(xhr => {
+        const errorMessage = xhr.responseJSON?.errors
+            ? Object.values(xhr.responseJSON.errors).flat()[0]
+            : "Terjadi kesalahan";
+        showErrorAlert(errorMessage);
     });
 }
 
-function Delete(dept_Id) {
+function Delete(nik) {
     Swal.fire({
         title: 'Are you sure?',
-        text: "You won't be able to revert this!",
+        text: "Data akan dihapus!",
         icon: 'warning',
         showCancelButton: true,
-        confirmButtonColor: '#3085d6',
-        cancelButtonColor: '#d33',
-        confirmButtonText: 'Yes, delete it!'
-    }).then((result) => {
+        confirmButtonText: 'Yes, delete it!',
+        cancelButtonText: 'Cancel'
+    }).then(result => {
         if (result.isConfirmed) {
             $.ajax({
-                url: "https://localhost:7079/api/Departments/" + dept_Id,
-                type: "DELETE",
-                dataType: "json",
-            }).done((result) => {
-                Swal.fire({
-                    position: 'center',
-                    icon: 'success',
-                    title: result.message,
-                    showConfirmButton: false,
-                    timer: 1500
-                });
+                url: `https://localhost:7079/api/Employees/${nik}`,
+                type: "PATCH"
+            }).done(result => {
+                showSuccessAlert(result.message);
                 table.ajax.reload();
-            }).fail((xhr) => {
-                Swal.fire({
-                    position: 'center',
-                    icon: 'error',
-                    title: 'Failed to delete the department',
-                    showConfirmButton: false,
-                    timer: 2000
-                });
+            }).fail(() => {
+                showErrorAlert('Gagal menghapus data');
             });
         }
     });

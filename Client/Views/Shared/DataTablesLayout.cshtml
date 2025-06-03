@@ -70,9 +70,18 @@
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <!-- Tables 1 -->
+                        <!-- Dashboard -->
+                        <li class="nav-item">
+                            <a asp-controller="Dashboards"
+                               asp-action="Index"
+                               class="nav-link @(currentController == "Dashboards" ? "active" : "")">
+                                <i class="nav-icon fas fa-gauges"></i>
+                                <p>Report</p>
+                            </a>
+                        </li>
+                        <!-- Tables 1 -->                        
                         <li class="nav-item @(currentController == "Employees" ? "menu-open" : "")">
-                            <a href="#" class="nav-link @(currentController == "Employees" ? "active" : "")">
+                            <a class="nav-link @(currentController == "Employees" ? "active" : "")">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>
                                     Tables 1
@@ -84,7 +93,6 @@
                                     <a asp-controller="Employees"
                                        asp-action="Index"
                                        class="nav-link @(currentController == "Employees" && currentAction == "Index" ? "active" : "")">
-                                        <i class="far fa-circle nav-icon"></i>
                                         <p>Employee</p>
                                     </a>
                                 </li>
@@ -93,7 +101,7 @@
 
                         <!-- Tables 2 -->
                         <li class="nav-item @(currentController == "Departments" ? "menu-open" : "")">
-                            <a href="#" class="nav-link @(currentController == "Departments" ? "active" : "")">
+                            <a class="nav-link @(currentController == "Departments" ? "active" : "")">
                                 <i class="nav-icon fas fa-building"></i>
                                 <p>
                                     Tables 2
@@ -105,7 +113,6 @@
                                     <a asp-controller="Departments"
                                        asp-action="Index"
                                        class="nav-link @(currentController == "Departments" && currentAction == "Index" ? "active" : "")">
-                                        <i class="far fa-circle nav-icon"></i>
                                         <p>Department</p>
                                     </a>
                                 </li>

@@ -15,7 +15,8 @@ namespace FridayAssignments.Models.Mappings
 
             // Employee
             CreateMap<Employee, EmployeeDto>()
-                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : null));
+                .ForMember(dest => dest.DepartmentName, opt => opt.MapFrom(src => src.Department != null ? src.Department.Name : null))
+                .ForMember(dest => dest.Dept_Id, opt => opt.MapFrom(src => src.Dept_Id));
             CreateMap<EmployeePostDto, Employee>();
             CreateMap<EmployeePutDto, Employee>();
         }

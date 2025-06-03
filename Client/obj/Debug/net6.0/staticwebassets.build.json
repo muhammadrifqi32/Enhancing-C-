@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "n/+AXwVceL4/C4VG2m5Rz7ryAC3NgxhsquBgprnKpXw=",
+  "Hash": "ypxNfDZQ8t6q9yaWP+YC98UOBUTRb7AzhdPjsvt2j28=",
   "Source": "Client",
   "BasePath": "_content/Client",
   "Mode": "Default",
@@ -41376,6 +41376,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\js\\EmployeeScript.js"
+    },
+    {
+      "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\Helper.js",
+      "SourceId": "Client",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\",
+      "BasePath": "_content/Client",
+      "RelativePath": "js/Helper.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\Helper.js"
     },
     {
       "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\site.js",

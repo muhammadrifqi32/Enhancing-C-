@@ -25,7 +25,7 @@ namespace FridayAssignments.Repositories
 
         public async Task<IEnumerable<Employee>> GetAsync()
         {
-            return await _myContext.Employees.ToListAsync();
+            return await _myContext.Employees.Include(d => d.Department).Where(e => e.isActive == true).ToListAsync();
         }
 
         public async Task<Employee?> GetAsync(string NIK)
@@ -42,7 +42,11 @@ namespace FridayAssignments.Repositories
 
         private async Task<string> GeneratedEmailAsync(string FirstName, string LastName)
         {
-            string baseEmail = $"{FirstName.ToLower()}.{LastName.ToLower()}";
+            // Hapus semua spasi dan ubah ke lowercase
+            string cleanFirstName = FirstName.ToLower().Replace(" ", "");
+            string cleanLastName = LastName.ToLower().Replace(" ", "");
+
+            string baseEmail = $"{cleanFirstName}.{cleanLastName}";
             string generatedEmail = $"{baseEmail}@berca.co.id";
             int counter = 1;
 
@@ -58,6 +62,7 @@ namespace FridayAssignments.Repositories
 
             return generatedEmail;
         }
+
 
         public async Task<int> InsertAsync(Employee employee)
         {

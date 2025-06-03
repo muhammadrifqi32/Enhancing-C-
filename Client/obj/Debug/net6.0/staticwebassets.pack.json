@@ -9729,6 +9729,10 @@
       "PackagePath": "staticwebassets\\js\\EmployeeScript.js"
     },
     {
+      "Id": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\Helper.js",
+      "PackagePath": "staticwebassets\\js\\Helper.js"
+    },
+    {
       "Id": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\site.js",
       "PackagePath": "staticwebassets\\js\\site.js"
     },
