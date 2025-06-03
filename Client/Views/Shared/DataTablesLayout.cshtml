@@ -75,13 +75,13 @@
                             <a asp-controller="Dashboards"
                                asp-action="Index"
                                class="nav-link @(currentController == "Dashboards" ? "active" : "")">
-                                <i class="nav-icon fas fa-gauges"></i>
-                                <p>Report</p>
+                                <i class="nav-icon fas fa-columns"></i>
+                                <p>Dashboard</p>
                             </a>
-                        </li>
-                        <!-- Tables 1 -->                        
+                        </li>                     
+                        <!-- Tables 1 -->
                         <li class="nav-item @(currentController == "Employees" ? "menu-open" : "")">
-                            <a class="nav-link @(currentController == "Employees" ? "active" : "")">
+                            <a href="#" class="nav-link @(currentController == "Employees" ? "active" : "")">
                                 <i class="nav-icon fas fa-user"></i>
                                 <p>
                                     Tables 1
@@ -96,12 +96,13 @@
                                         <p>Employee</p>
                                     </a>
                                 </li>
+                                <!-- Tambah submenu lainnya di sini -->
                             </ul>
                         </li>
 
                         <!-- Tables 2 -->
                         <li class="nav-item @(currentController == "Departments" ? "menu-open" : "")">
-                            <a class="nav-link @(currentController == "Departments" ? "active" : "")">
+                            <a href="#" class="nav-link @(currentController == "Departments" ? "active" : "")">
                                 <i class="nav-icon fas fa-building"></i>
                                 <p>
                                     Tables 2
@@ -116,8 +117,10 @@
                                         <p>Department</p>
                                     </a>
                                 </li>
+                                <!-- Tambah submenu lainnya di sini -->
                             </ul>
                         </li>
+
                     </ul>
                 </nav>
                 <!-- /.sidebar-menu -->
