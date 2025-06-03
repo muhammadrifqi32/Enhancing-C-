@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@inject Microsoft.AspNetCore.Mvc.Rendering.IHtmlHelper<dynamic> Html
+@{
+    var currentController = ViewContext.RouteData.Values["controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["action"]?.ToString();
+}
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8">
@@ -30,7 +36,6 @@
             <!-- Right navbar links -->
             <ul class="navbar-nav ml-auto">
                 <!-- Navbar Search -->
-
                 <!-- Messages Dropdown Menu -->
                 <!-- Notifications Dropdown Menu -->
                 <li class="nav-item">
@@ -62,19 +67,49 @@
                 </div>
 
                 <!-- SidebarSearch Form -->
-
                 <!-- Sidebar Menu -->
                 <nav class="mt-2">
                     <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu" data-accordion="false">
-                        <!-- Add icons to the links using the .nav-icon class
-                             with font-awesome or any other icon font library -->
-                        <li class="nav-item menu-open">
-                            <a href="#" class="nav-link">
-                                <i class="nav-icon fas fa-table"></i>
+                        <!-- Tables 1 -->
+                        <li class="nav-item @(currentController == "Employees" ? "menu-open" : "")">
+                            <a href="#" class="nav-link @(currentController == "Employees" ? "active" : "")">
+                                <i class="nav-icon fas fa-user"></i>
                                 <p>
-                                    Tables
+                                    Tables 1
+                                    <i class="fas fa-angle-left right"></i>
                                 </p>
                             </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Employees"
+                                       asp-action="Index"
+                                       class="nav-link @(currentController == "Employees" && currentAction == "Index" ? "active" : "")">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Employee</p>
+                                    </a>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <!-- Tables 2 -->
+                        <li class="nav-item @(currentController == "Departments" ? "menu-open" : "")">
+                            <a href="#" class="nav-link @(currentController == "Departments" ? "active" : "")">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>
+                                    Tables 2
+                                    <i class="fas fa-angle-left right"></i>
+                                </p>
+                            </a>
+                            <ul class="nav nav-treeview">
+                                <li class="nav-item">
+                                    <a asp-controller="Departments"
+                                       asp-action="Index"
+                                       class="nav-link @(currentController == "Departments" && currentAction == "Index" ? "active" : "")">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Department</p>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </nav>
