@@ -1,4 +1,5 @@
 ﻿using FridayAssignments.Models;
+using FridayAssignments.Models.DTOs;
 
 namespace FridayAssignments.Repositories.Interface
 {
@@ -9,5 +10,7 @@ namespace FridayAssignments.Repositories.Interface
         Task<int> InsertAsync(Employee employee);
         Task<int> UpdateAsync(Employee employee);
         Task<int> DeleteAsync(string NIK);
+        Task<List<EmployeePerDepartmentDto>> GetEmployeeCountPerDepartmentAsync();
+
     }
 }

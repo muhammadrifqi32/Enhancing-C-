@@ -98,5 +98,15 @@ namespace FridayAssignments.Controllers
 
             return ApiResponse(HttpStatusCode.InternalServerError, "Terjadi Kesalahan");
         }
+
+        [HttpGet("chart/active-per-department")]
+        public async Task<IActionResult> GetActiveEmployeePerDepartment()
+        {
+            var data = await _employeeRepository.GetEmployeeCountPerDepartmentAsync();
+            if (data == null || !data.Any())
+                return ApiResponse(HttpStatusCode.NotFound, "Data tidak ditemukan");
+
+            return ApiResponse(HttpStatusCode.OK, "Data ditemukan", data);
+        }
     }
 }

@@ -62,6 +62,12 @@ namespace FridayAssignments.Models.DTOs
 
         [Required(ErrorMessage = "Departemen wajib dipilih")]
         public string? Dept_Id { get; set; }
+
+    }
+    public class EmployeePerDepartmentDto
+    {
+        public string? DepartmentName { get; set; }
+        public int TotalEmployees { get; set; }
     }
 
 }

@@ -1,5 +1,6 @@
 ﻿using FridayAssignments.Context;
 using FridayAssignments.Models;
+using FridayAssignments.Models.DTOs;
 using FridayAssignments.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
 
@@ -78,6 +79,18 @@ namespace FridayAssignments.Repositories
         {
             _myContext.Entry(employee).State = EntityState.Modified;
             return await _myContext.SaveChangesAsync();
+        }
+
+        public async Task<List<EmployeePerDepartmentDto>> GetEmployeeCountPerDepartmentAsync()
+        {
+            return await _myContext.Employees
+        .Where(e => e.isActive == true)
+        .GroupBy(e => e.Department!.Name)
+        .Select(g => new EmployeePerDepartmentDto
+        {
+            DepartmentName = g.Key,
+            TotalEmployees = g.Count()
+        }).ToListAsync();
         }
     }
 }

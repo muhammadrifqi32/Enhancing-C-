@@ -9721,6 +9721,10 @@
       "PackagePath": "staticwebassets\\favicon.ico"
     },
     {
+      "Id": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\ChartScript.js",
+      "PackagePath": "staticwebassets\\js\\ChartScript.js"
+    },
+    {
       "Id": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\DepartmentScript.js",
       "PackagePath": "staticwebassets\\js\\DepartmentScript.js"
     },
