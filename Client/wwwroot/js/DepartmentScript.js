@@ -152,6 +152,7 @@
 //        }
 //    })
 //}
+
 let table = null;
 
 $(document).ready(function () {

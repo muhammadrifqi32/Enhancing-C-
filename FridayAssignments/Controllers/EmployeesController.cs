@@ -3,6 +3,7 @@ using FridayAssignments.Context;
 using FridayAssignments.Models;
 using FridayAssignments.Models.DTOs;
 using FridayAssignments.Repositories.Interface;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -59,7 +60,9 @@ namespace FridayAssignments.Controllers
                 return ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
 
             var employee = _mapper.Map<Employee>(input);
+
             var result = await _employeeRepository.InsertAsync(employee);
+
             if (result >= 1)
             {
                 var dto = _mapper.Map<EmployeeDto>(employee);
@@ -68,6 +71,7 @@ namespace FridayAssignments.Controllers
 
             return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memasukkan Data");
         }
+
 
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] EmployeePutDto input)

@@ -22,6 +22,20 @@ namespace FridayAssignments.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("FridayAssignments.Models.Account", b =>
+                {
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Email");
+
+                    b.ToTable("Accounts");
+                });
+
             modelBuilder.Entity("FridayAssignments.Models.Department", b =>
                 {
                     b.Property<string>("Dept_Id")
@@ -47,7 +61,8 @@ namespace FridayAssignments.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Email")
-                        .HasColumnType("nvarchar(max)");
+                        .IsRequired()
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("FirstName")
                         .HasColumnType("nvarchar(max)");
@@ -65,6 +80,9 @@ namespace FridayAssignments.Migrations
 
                     b.HasIndex("Dept_Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Employees");
                 });
 
@@ -74,7 +92,21 @@ namespace FridayAssignments.Migrations
                         .WithMany()
                         .HasForeignKey("Dept_Id");
 
+                    b.HasOne("FridayAssignments.Models.Account", "Account")
+                        .WithOne("Employee")
+                        .HasForeignKey("FridayAssignments.Models.Employee", "Email")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Account");
+
                     b.Navigation("Department");
+                });
+
+            modelBuilder.Entity("FridayAssignments.Models.Account", b =>
+                {
+                    b.Navigation("Employee")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

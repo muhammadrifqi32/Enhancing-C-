@@ -3,6 +3,7 @@ using FridayAssignments.Models;
 using FridayAssignments.Models.DTOs;
 using FridayAssignments.Repositories.Interface;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Identity;
 
 namespace FridayAssignments.Repositories
 {
@@ -26,7 +27,7 @@ namespace FridayAssignments.Repositories
 
         public async Task<IEnumerable<Employee>> GetAsync()
         {
-            return await _myContext.Employees.Include(d => d.Department).Where(e => e.isActive == true).ToListAsync();
+            return await _myContext.Employees.Include(e => e.Department).Where(e => e.isActive == true).ToListAsync();
         }
 
         public async Task<Employee?> GetAsync(string NIK)
@@ -51,7 +52,7 @@ namespace FridayAssignments.Repositories
             string generatedEmail = $"{baseEmail}@berca.co.id";
             int counter = 1;
 
-            while (await _myContext.Employees.AnyAsync(u => u.Email == generatedEmail))
+            while (await _myContext.Accounts.AnyAsync(u => u.Email == generatedEmail))
             {
                 generatedEmail = $"{baseEmail}{counter:D3}@berca.co.id";
                 counter++;
@@ -64,12 +65,27 @@ namespace FridayAssignments.Repositories
             return generatedEmail;
         }
 
+        private string HashPassword(string password)
+        {
+            // Menggunakan PasswordHasher dari ASP.NET Core Identity
+            var passwordHasher = new PasswordHasher<Account>();
+            return passwordHasher.HashPassword(new Account(), password); // null karena tidak ada context user
+        }
 
         public async Task<int> InsertAsync(Employee employee)
         {
             employee.NIK = await GeneratedNIKAsync();
-            employee.Email = await GeneratedEmailAsync(employee.FirstName, employee.LastName);
             employee.isActive = true;
+
+            var generatedEmail = await GeneratedEmailAsync(employee.FirstName, employee.LastName);
+            employee.Email = generatedEmail;
+
+            var account = new Account
+            {
+                Email = generatedEmail, // harus sama
+                Password = HashPassword("Pa5sword!")
+            };
+            employee.Account = account;
 
             await _myContext.Employees.AddAsync(employee);
             return await _myContext.SaveChangesAsync();

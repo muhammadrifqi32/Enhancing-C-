@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "D3FApFWKN+ERmjzcnnH/PheWi1kJ+WtP+sVYN08PTBQ=",
+  "Hash": "2NNp6SY6XAsG+pU3PK4cH4isKkvWbpa4TbOtWLQbP3s=",
   "Source": "Client",
   "BasePath": "_content/Client",
   "Mode": "Default",
@@ -8260,6 +8260,40 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\AdminLTE-3.2.0\\plugins\\bs-stepper\\js\\bs-stepper.min.js.map"
+    },
+    {
+      "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\AdminLTE-3.2.0\\plugins\\chart.js v3.9.1\\chart.js",
+      "SourceId": "Client",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\",
+      "BasePath": "_content/Client",
+      "RelativePath": "AdminLTE-3.2.0/plugins/chart.js v3.9.1/chart.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\AdminLTE-3.2.0\\plugins\\chart.js v3.9.1\\chart.js"
+    },
+    {
+      "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\AdminLTE-3.2.0\\plugins\\chart.js v3.9.1\\chart.min.js",
+      "SourceId": "Client",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\",
+      "BasePath": "_content/Client",
+      "RelativePath": "AdminLTE-3.2.0/plugins/chart.js v3.9.1/chart.min.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\AdminLTE-3.2.0\\plugins\\chart.js v3.9.1\\chart.min.js"
     },
     {
       "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\AdminLTE-3.2.0\\plugins\\chart.js\\Chart.bundle.js",
