@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FridayAssignments.Context;
+using FridayAssignments.Controllers.Helper;
 using FridayAssignments.Models;
 using FridayAssignments.Models.DTOs;
 using FridayAssignments.Repositories.Interface;
@@ -25,20 +26,15 @@ namespace FridayAssignments.Controllers
             _mapper = mapper;
         }
 
-        private IActionResult ApiResponse(HttpStatusCode status, string message, object? data = null)
-        {
-            return StatusCode((int)status, new { status, message, data });
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var employees = await _employeeRepository.GetAsync();
             if (!employees.Any())
-                return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
 
             var dto = _mapper.Map<List<EmployeeDto>>(employees);
-            return ApiResponse(HttpStatusCode.OK, $"{dto.Count} Data Ditemukan", dto);
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, $"{dto.Count} Data Ditemukan", dto);
         }
 
         [HttpGet("{nik}")]
@@ -46,10 +42,10 @@ namespace FridayAssignments.Controllers
         {
             var employee = await _employeeRepository.GetAsync(nik);
             if (employee == null)
-                return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
 
             var dto = _mapper.Map<EmployeeDto>(employee);
-            return ApiResponse(HttpStatusCode.OK, "Data Ditemukan", dto);
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data Ditemukan", dto);
         }
 
         [HttpPost]
@@ -57,7 +53,7 @@ namespace FridayAssignments.Controllers
         {
             var deptExists = await _context.Departments.AnyAsync(d => d.Dept_Id == input.Dept_Id);
             if (!deptExists)
-                return ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
 
             var employee = _mapper.Map<Employee>(input);
 
@@ -66,10 +62,10 @@ namespace FridayAssignments.Controllers
             if (result >= 1)
             {
                 var dto = _mapper.Map<EmployeeDto>(employee);
-                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dimasukkan", dto);
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data Berhasil Dimasukkan", dto);
             }
 
-            return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memasukkan Data");
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memasukkan Data");
         }
 
 
@@ -78,17 +74,17 @@ namespace FridayAssignments.Controllers
         {
             var deptExists = await _context.Departments.AnyAsync(d => d.Dept_Id == input.Dept_Id);
             if (!deptExists)
-                return ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.BadRequest, "Department tidak ditemukan");
 
             var employee = _mapper.Map<Employee>(input);
             var result = await _employeeRepository.UpdateAsync(employee);
             if (result >= 1)
             {
                 var dto = _mapper.Map<EmployeeDto>(employee);
-                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Diperbaharui", dto);
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data Berhasil Diperbaharui", dto);
             }
 
-            return ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memperbaharui Data");
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.InternalServerError, "Gagal Memperbaharui Data");
         }
 
         [HttpPatch("{nik}")]
@@ -96,11 +92,11 @@ namespace FridayAssignments.Controllers
         {
             var result = await _employeeRepository.DeleteAsync(nik);
             if (result >= 1)
-                return ApiResponse(HttpStatusCode.OK, "Data Berhasil Dihapus", result);
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data Berhasil Dihapus", result);
             else if (result == 0)
-                return ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, "Data Tidak Ditemukan");
 
-            return ApiResponse(HttpStatusCode.InternalServerError, "Terjadi Kesalahan");
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.InternalServerError, "Terjadi Kesalahan");
         }
 
         [HttpGet("chart/active-per-department")]
@@ -108,9 +104,9 @@ namespace FridayAssignments.Controllers
         {
             var data = await _employeeRepository.GetEmployeeCountPerDepartmentAsync();
             if (data == null || !data.Any())
-                return ApiResponse(HttpStatusCode.NotFound, "Data tidak ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, "Data tidak ditemukan");
 
-            return ApiResponse(HttpStatusCode.OK, "Data ditemukan", data);
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data ditemukan", data);
         }
     }
 }

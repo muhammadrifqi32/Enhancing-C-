@@ -1,11 +1,23 @@
 {
   "Version": 1,
-  "Hash": "2NNp6SY6XAsG+pU3PK4cH4isKkvWbpa4TbOtWLQbP3s=",
+  "Hash": "Y4RAmelWtowODmAMCtqiewV74SypZT5bHWAPunoczh4=",
   "Source": "Client",
   "BasePath": "_content/Client",
   "Mode": "Default",
   "ManifestType": "Build",
-  "ReferencedProjectsConfiguration": [],
+  "ReferencedProjectsConfiguration": [
+    {
+      "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\FridayAssignments\\FridayAssignments.csproj",
+      "Version": 2,
+      "Source": "FridayAssignments",
+      "GetPublishAssetsTargets": "ComputeReferencedStaticWebAssetsPublishManifest;GetCurrentProjectPublishStaticWebAssetItems",
+      "AdditionalPublishProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalPublishPropertiesToRemove": "WebPublishProfileFile;TargetFramework",
+      "GetBuildAssetsTargets": "GetCurrentProjectBuildStaticWebAssetItems",
+      "AdditionalBuildProperties": "Configuration=Debug;Platform=AnyCPU",
+      "AdditionalBuildPropertiesToRemove": "WebPublishProfileFile;TargetFramework"
+    }
+  ],
   "DiscoveryPatterns": [
     {
       "Name": "Client\\wwwroot",

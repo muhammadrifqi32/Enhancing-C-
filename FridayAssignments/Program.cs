@@ -15,6 +15,7 @@ builder.Services.AddDbContext<MyContext>(options =>
             options.UseSqlServer(builder.Configuration.GetConnectionString("FridayAssignments"))); 
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 builder.Services.AddScoped<IEmployeeRepository, EmployeeRepository>();
+builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddAutoMapper(typeof(Program));
 builder.Services.AddCors(c =>
 {

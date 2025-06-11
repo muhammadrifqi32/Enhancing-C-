@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FridayAssignments.Controllers.Helper;
 using FridayAssignments.Models;
 using FridayAssignments.Models.DTOs.FridayAssignments.DTOs;
 using FridayAssignments.Models.Dump;
@@ -21,17 +22,13 @@ namespace FridayAssignments.Controllers
             _mapper = mapper;
         }
 
-        private IActionResult ApiResponse(HttpStatusCode status, string message, object? data = null)
-        {
-            return StatusCode((int)status, new { status, message, data });
-        }
-
         [HttpGet]
         public async Task<IActionResult> Get()
         {
             var result = await _departmentRepository.GetAsync();
-            var dto = _mapper.Map<List<DepartmentDto>>(result);
-            return ApiResponse(HttpStatusCode.OK, $"{dto.Count} data ditemukan", dto);
+            var dto = _mapper.Map<List<DepartmentDto>>(result); 
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, $"{dto.Count} data ditemukan", dto);
+
         }
 
         [HttpPost("Paging")]
@@ -56,10 +53,10 @@ namespace FridayAssignments.Controllers
         {
             var result = await _departmentRepository.GetAsync(id);
             if (result == null)
-                return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
 
             var dto = _mapper.Map<DepartmentDto>(result);
-            return ApiResponse(HttpStatusCode.OK, "Data ditemukan", dto);
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data ditemukan", dto);
         }
 
         [HttpPost]
@@ -69,10 +66,10 @@ namespace FridayAssignments.Controllers
             var save = await _departmentRepository.InsertAsync(department);
 
             if (!save)
-                return ApiResponse(HttpStatusCode.InternalServerError, "Gagal memasukkan data");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.InternalServerError, "Gagal memasukkan data");
 
             var dto = _mapper.Map<DepartmentDto>(department);
-            return ApiResponse(HttpStatusCode.OK, "Data berhasil dimasukkan", dto);
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data berhasil dimasukkan", dto);
         }
 
         [HttpPut]
@@ -82,10 +79,10 @@ namespace FridayAssignments.Controllers
             var save = await _departmentRepository.UpdateAsync(department);
 
             if (!save)
-                return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {input.Dept_Id} tidak ditemukan atau gagal update");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {input.Dept_Id} tidak ditemukan atau gagal update");
 
             var dto = _mapper.Map<DepartmentDto>(department);
-            return ApiResponse(HttpStatusCode.OK, "Data berhasil diperbarui", dto);
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data berhasil diperbarui", dto);
         }
 
         [HttpDelete("{id}")]
@@ -93,9 +90,9 @@ namespace FridayAssignments.Controllers
         {
             var isDeleted = await _departmentRepository.DeleteAsync(id);
             if (!isDeleted)
-                return ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
+                return ApiResponseHelper.ApiResponse(HttpStatusCode.NotFound, $"Department dengan ID {id} tidak ditemukan");
 
-            return ApiResponse(HttpStatusCode.OK, "Data berhasil dihapus");
+            return ApiResponseHelper.ApiResponse(HttpStatusCode.OK, "Data berhasil dihapus");
         }
     }
 }

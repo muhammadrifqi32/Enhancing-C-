@@ -14,4 +14,8 @@
     <Folder Include="wwwroot\AdminLTE-3.2.0\plugins\NewFolder\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\FridayAssignments\FridayAssignments.csproj" />
+  </ItemGroup>
+
 </Project>

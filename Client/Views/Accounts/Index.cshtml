@@ -1,5 +1,4 @@
-﻿
-@{
+﻿@{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/LoginPageLayout.cshtml";
 }
@@ -43,13 +42,13 @@
         </form>
 
         @*<div class="social-auth-links text-center mb-3">
-            <p>- OR -</p>
-            <a href="#" class="btn btn-block btn-primary">
-                <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
-            </a>
-            <a href="#" class="btn btn-block btn-danger">
-                <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
-            </a>
+        <p>- OR -</p>
+        <a href="#" class="btn btn-block btn-primary">
+        <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
+        </a>
+        <a href="#" class="btn btn-block btn-danger">
+        <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
+        </a>
         </div>*@
         <!-- /.social-auth-links -->
 
@@ -80,6 +79,50 @@
             toggleIcon.classList.toggle("fa-eye");
             toggleIcon.classList.toggle("fa-eye-slash");
         }
+
+        $(document).ready(function () {
+            $('form').submit(function (e) {
+                e.preventDefault();
+
+                const email = $('input[type="email"]').val();
+                const password = $('#password').val();
+
+                $.ajax({
+                    url: '/Accounts/Login',
+                    method: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify({ email, password }),
+                    success: function (response) {
+                        if (response.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Login Berhasil',
+                                text: response.message,
+                                showConfirmButton: false,
+                                timer: 750
+                            });
+
+                            setTimeout(() => {
+                                window.location.href = 'https://localhost:7021/dashboards';
+                            }, 750);
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Login Gagal',
+                                text: response.message
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Login Gagal',
+                            text: 'Terjadi kesalahan pada server'
+                        });
+                    }
+                });
+            });
+        });
     </script>
 }
 
