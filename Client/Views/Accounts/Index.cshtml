@@ -1,6 +1,7 @@
 ﻿@{
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/LoginPageLayout.cshtml";
+    var sessionExpired = Context.Request.Query["sessionExpired"];
 }
 
 <div class="card">
@@ -68,61 +69,22 @@
     <script src="~/adminlte-3.2.0/docs/assets/plugins/bootstrap/js/bootstrap.bundle.min.js"></script>
     <!-- AdminLTE App -->
     <script src="~/adminlte-3.2.0/dist/js/adminlte.min.js"></script>
+    <script src="~/js/accountscript.js"></script>
     <script src="~/js/sweetalert2@9.js"></script>
-    <script>
-        function togglePassword() {
-            const passwordInput = document.getElementById("password");
-            const toggleIcon = document.getElementById("toggleIcon");
-
-            const isPassword = passwordInput.type === "password";
-            passwordInput.type = isPassword ? "text" : "password";
-            toggleIcon.classList.toggle("fa-eye");
-            toggleIcon.classList.toggle("fa-eye-slash");
-        }
-
-        $(document).ready(function () {
-            $('form').submit(function (e) {
-                e.preventDefault();
-
-                const email = $('input[type="email"]').val();
-                const password = $('#password').val();
-
-                $.ajax({
-                    url: '/Accounts/Login',
-                    method: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify({ email, password }),
-                    success: function (response) {
-                        if (response.success) {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Login Berhasil',
-                                text: response.message,
-                                showConfirmButton: false,
-                                timer: 750
-                            });
-
-                            setTimeout(() => {
-                                window.location.href = 'https://localhost:7021/dashboards';
-                            }, 750);
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Login Gagal',
-                                text: response.message
-                            });
-                        }
-                    },
-                    error: function () {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Login Gagal',
-                            text: 'Terjadi kesalahan pada server'
-                        });
-                    }
-                });
+    @if (bool.TryParse(sessionExpired, out var expired) && expired)
+    {
+        <script>
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sesi Anda telah berakhir',
+                text: 'Silakan login kembali untuk melanjutkan.',
+                timer: 2000,
+                showConfirmButton: false
+            }).then(() => {
+                const cleanUrl = window.location.origin + window.location.pathname;
+                window.history.replaceState({}, document.title, cleanUrl);
             });
-        });
-    </script>
+        </script>
+    }
 }
 

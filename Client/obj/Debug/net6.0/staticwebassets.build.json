@@ -1,6 +1,6 @@
 {
   "Version": 1,
-  "Hash": "Y4RAmelWtowODmAMCtqiewV74SypZT5bHWAPunoczh4=",
+  "Hash": "X8JFWetUB9S67SbdfPkaAmuWBlXeeOttMCL735boYT8=",
   "Source": "Client",
   "BasePath": "_content/Client",
   "Mode": "Default",
@@ -41388,6 +41388,23 @@
       "CopyToOutputDirectory": "Never",
       "CopyToPublishDirectory": "PreserveNewest",
       "OriginalItemSpec": "wwwroot\\favicon.ico"
+    },
+    {
+      "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\AccountScript.js",
+      "SourceId": "Client",
+      "SourceType": "Discovered",
+      "ContentRoot": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\",
+      "BasePath": "_content/Client",
+      "RelativePath": "js/AccountScript.js",
+      "AssetKind": "All",
+      "AssetMode": "All",
+      "AssetRole": "Primary",
+      "RelatedAsset": "",
+      "AssetTraitName": "",
+      "AssetTraitValue": "",
+      "CopyToOutputDirectory": "Never",
+      "CopyToPublishDirectory": "PreserveNewest",
+      "OriginalItemSpec": "wwwroot\\js\\AccountScript.js"
     },
     {
       "Identity": "C:\\Users\\rifqi.muhammad\\Downloads\\Enhancing C#\\Enhancing C#\\Client\\wwwroot\\js\\ChartScript.js",

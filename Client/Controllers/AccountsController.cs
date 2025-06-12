@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.Text;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Client.Controllers
 {
@@ -13,11 +14,13 @@ namespace Client.Controllers
         {
             _clientFactory = clientFactory;
         }
+        [AllowAnonymous]
         public IActionResult Index()
         {
             return View();
         }
 
+        [AllowAnonymous]
         [HttpPost]
         public async Task<IActionResult> Login([FromBody] AccountsDTO input)
         {
@@ -42,7 +45,14 @@ namespace Client.Controllers
                 }
 
                 // Set session (jika login berhasil)
-                HttpContext.Session.SetString("Email", input.Email);
+                var jsonDoc = JsonDocument.Parse(responseContent);
+                var email = jsonDoc.RootElement.GetProperty("data").GetProperty("email").GetString();
+                var fullName = jsonDoc.RootElement.GetProperty("data").GetProperty("fullName").GetString();
+
+                // Simpan ke session
+                HttpContext.Session.SetString("Email", email);
+                HttpContext.Session.SetString("FullName", fullName);
+
                 return Json(new
                 {
                     success = true,
